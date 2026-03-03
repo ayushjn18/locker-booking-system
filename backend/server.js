@@ -5,6 +5,8 @@ const dotenv=require("dotenv");
 const cors=require("cors");
 const authMiddleware = require("./middleware/authMiddleware");
 const lockerRoutes = require("./routes/lockerRoutes");
+const bookingRoutes = require("./routes/bookingRoutes");
+const startCronJobs = require("./utils/cronJobs");
 
 dotenv.config();
 
@@ -12,13 +14,17 @@ const app=express();
 
 app.use(cors());
 app.use(express.json());
+app.use("/api/bookings", bookingRoutes);
 app.use("/api/lockers", lockerRoutes);
 
 app.use("/api/auth", authRoutes);
 
 mongoose.connect(process.env.MONGO_URI)
-.then(()=> console.log("MONGODB CONNECTED"))
-.catch((err)=> console.log(err));
+.then(() => {
+    console.log("MongoDB Connected");
+    startCronJobs();
+})
+.catch((err) => console.log(err));
 
 app.get("/",(req,res)=>{
     res.send("Locker Booking API Running");

@@ -24,6 +24,15 @@ const bookingSchema = new mongoose.Schema(
         type: String,
         required: true
     },
+    idType: {
+        type: String
+    },
+    idNumber: {
+        type: String
+    },
+    idImage: {
+        type: String
+    },
     status: {
         type: String,
         enum: ["active", "expired"],

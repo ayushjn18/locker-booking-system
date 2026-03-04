@@ -7,6 +7,7 @@ const authMiddleware = require("./middleware/authMiddleware");
 const lockerRoutes = require("./routes/lockerRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
 const startCronJobs = require("./utils/cronJobs");
+const adminRoutes = require("./routes/adminRoutes");
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use("/api/bookings", bookingRoutes);
 app.use("/api/lockers", lockerRoutes);
 
 app.use("/api/auth", authRoutes);
+app.use("/api/admin", adminRoutes);
 
 mongoose.connect(process.env.MONGO_URI)
 .then(() => {

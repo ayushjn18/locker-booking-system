@@ -5,9 +5,15 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const role = localStorage.getItem("role");
+
   const handleLogout = () => {
+
     localStorage.removeItem("token");
+    localStorage.removeItem("role");
+
     navigate("/login");
+
   };
 
   return (
@@ -28,20 +34,27 @@ const Navbar = () => {
         </button>
 
         <button
-  className={location.pathname === "/admin" ? "active" : ""}
-  onClick={() => navigate("/admin")}
->
-  Admin
-</button>
-
-        <button
           className={location.pathname === "/history" ? "active" : ""}
           onClick={() => navigate("/history")}
         >
           Booking History
         </button>
 
-        <button className="logout-btn" onClick={handleLogout}>
+        {role === "admin" && (
+
+          <button
+            className={location.pathname === "/admin" ? "active" : ""}
+            onClick={() => navigate("/admin")}
+          >
+            Admin
+          </button>
+
+        )}
+
+        <button
+          className="logout-btn"
+          onClick={handleLogout}
+        >
           Logout
         </button>
 

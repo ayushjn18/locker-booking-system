@@ -9,6 +9,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import Payment from "./pages/Payment";
 import AdminDashboard from "./pages/AdminDashboard";
 import BookingSuccess from "./pages/BookingSuccess";
+import BookLocker from "./pages/BookLocker";
+import Home from "./pages/Home";
 
 function App() {
 
@@ -17,8 +19,8 @@ function App() {
     <BrowserRouter>
 
       <Routes>
-
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<Home />} />
+       
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route
@@ -37,6 +39,7 @@ function App() {
     </ProtectedRoute>
   }
 />
+<Route path="/book-locker" element={<BookLocker/>}/>
 <Route path="/payment" element={<Payment />} />
 <Route
   path="/history"

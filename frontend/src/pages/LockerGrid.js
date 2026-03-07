@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import API from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 const LockerGrid = () => {
+
+  const navigate = useNavigate();
 
   const [lockers, setLockers] = useState([]);
   const [selectedLocker, setSelectedLocker] = useState(null);
@@ -35,73 +38,49 @@ const LockerGrid = () => {
 
   };
 
-  const handleBooking = async () => {
+  // NEW BOOKING FLOW (redirect to payment)
 
-    try {
+  const handleBooking = () => {
 
-      const token = localStorage.getItem("token");
+    const bookingData = {
+      lockerId: selectedLocker._id,
+      lockerNumber: selectedLocker.lockerNumber,
+      durationHours,
+      idType,
+      idNumber,
+      idImage
+    };
 
-      const formData = new FormData();
-      formData.append("lockerId", selectedLocker._id);
-      formData.append("durationHours", durationHours);
-      formData.append("idType", idType);
-      formData.append("idNumber", idNumber);
-      formData.append("idImage", idImage);
-
-      const res = await API.post("/bookings", formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data"
-        }
-      });
-
-      alert("Locker booked! Access Code: " + res.data.accessCode);
-
-      fetchLockers();
-      setSelectedLocker(null);
-
-    } catch (error) {
-      console.log(error);
-      alert("Booking failed");
-    }
+    navigate("/payment", { state: { bookingData } });
 
   };
 
   return (
 
-    <div style={{ padding: "20px" }}>
+    <div className="locker-container">
 
-      <h2>Locker Grid</h2>
+      <h2 className="locker-title">Locker Dashboard</h2>
 
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(10, 60px)",
-          gap: "10px"
-        }}
-      >
+      <div className="legend">
+
+        <div className="legend-item available">Available</div>
+
+        <div className="legend-item booked">Booked</div>
+
+        <div className="legend-item selected">Selected</div>
+
+      </div>
+
+      <div className="locker-grid">
 
         {lockers.map((locker) => (
 
           <div
             key={locker._id}
             onClick={() => setSelectedLocker(locker)}
-            style={{
-              width: "60px",
-              height: "60px",
-              backgroundColor:
-                selectedLocker?._id === locker._id
-                  ? "yellow"
-                  : locker.status === "available"
-                  ? "green"
-                  : "red",
-              color: "white",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              borderRadius: "5px",
-              cursor: "pointer"
-            }}
+            className={`locker-box 
+            ${locker.status === "booked" ? "booked" : ""}
+            ${selectedLocker?._id === locker._id ? "selected" : ""}`}
           >
 
             {locker.lockerNumber}
@@ -112,10 +91,9 @@ const LockerGrid = () => {
 
       </div>
 
-
       {selectedLocker && (
 
-        <div style={{ marginTop: "30px" }}>
+        <div className="booking-form">
 
           <h3>Book Locker #{selectedLocker.lockerNumber}</h3>
 
@@ -126,16 +104,30 @@ const LockerGrid = () => {
             onChange={(e) => setDurationHours(e.target.value)}
           />
 
-          <br /><br />
-
-          <input
-            type="text"
-            placeholder="ID Type (Aadhaar / PAN)"
+          <select
             value={idType}
             onChange={(e) => setIdType(e.target.value)}
-          />
+          >
 
-          <br /><br />
+            <option value="">Select ID Type</option>
+
+            <option value="Aadhaar Card">
+              Aadhaar Card
+            </option>
+
+            <option value="PAN Card">
+              PAN Card
+            </option>
+
+            <option value="Driving Licence">
+              Driving Licence
+            </option>
+
+            <option value="Passport">
+              Passport
+            </option>
+
+          </select>
 
           <input
             type="text"
@@ -144,17 +136,13 @@ const LockerGrid = () => {
             onChange={(e) => setIdNumber(e.target.value)}
           />
 
-          <br /><br />
-
           <input
             type="file"
             onChange={(e) => setIdImage(e.target.files[0])}
           />
 
-          <br /><br />
-
           <button onClick={handleBooking}>
-            Book Locker
+            Proceed to Payment
           </button>
 
         </div>

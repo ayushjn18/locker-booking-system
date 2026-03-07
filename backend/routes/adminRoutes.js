@@ -4,8 +4,10 @@ const router = express.Router();
 const Locker = require("../models/Locker");
 const Booking = require("../models/Booking");
 const User = require("../models/User");
+const adminMiddleware = require("../middleware/adminMiddleware");
+const authMiddleware =require("../middleware/authMiddleware");
 
-router.get("/stats", async (req, res) => {
+router.get("/stats", authMiddleware, adminMiddleware, async(req,res)=>{
     try {
 
         const totalLockers = await Locker.countDocuments();

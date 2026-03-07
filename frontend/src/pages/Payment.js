@@ -1,63 +1,112 @@
-import { useNavigate, useLocation } from "react-router-dom";
-import { toast } from "react-toastify";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import API from "../services/api";
 
 const Payment = () => {
 
-  const navigate = useNavigate();
   const location = useLocation();
+  const navigate = useNavigate();
 
-  const { bookingData } = location.state || {};
+  const bookingData = location.state?.bookingData;
 
-  const handlePayment = async () => {
+  const [timeLeft,setTimeLeft] = useState(300); // 5 minutes
 
-    try {
+  useEffect(()=>{
 
-      const token = localStorage.getItem("token");
+    const timer = setInterval(()=>{
 
-      const formData = new FormData();
+      setTimeLeft(prev => prev-1);
 
-      formData.append("lockerId", bookingData.lockerId);
-      formData.append("durationHours", bookingData.durationHours);
-      formData.append("idType", bookingData.idType);
-      formData.append("idNumber", bookingData.idNumber);
-      formData.append("idImage", bookingData.idImage);
+    },1000);
 
-      const res = await API.post("/bookings", formData, {
-        headers:{
-          Authorization:`Bearer ${token}`
-        }
-      });
+    return ()=>clearInterval(timer);
 
-      navigate("/success",{
-  state:{
-    accessCode: res.data.accessCode,
-    lockerNumber: bookingData.lockerNumber
+  },[]);
+
+  const minutes = Math.floor(timeLeft/60);
+  const seconds = timeLeft % 60;
+
+  const handlePayment = async ()=>{
+
+  try{
+
+    const token = localStorage.getItem("token");
+
+    const formData = new FormData();
+
+    formData.append("lockerId", bookingData.lockerId);
+    formData.append("durationHours", bookingData.durationHours);
+    formData.append("idType", bookingData.idType);
+    formData.append("idNumber", bookingData.idNumber);
+    formData.append("idImage", bookingData.idImage);
+
+    const res = await API.post("/bookings", formData, {
+      headers:{
+        Authorization:`Bearer ${token}`,
+        "Content-Type":"multipart/form-data"
+      }
+    });
+
+    navigate("/success",{
+      state:{
+        accessCode: res.data.accessCode,
+        lockerNumber: bookingData.lockerNumber
+      }
+    });
+
+  }catch(error){
+
+    console.log(error);
+
   }
-});
 
-    } catch(error){
-
-      toast.error("Payment failed");
-
-    }
-
-  };
+};
 
   return (
 
-    <div className="payment-page">
+    <div className="payment-container">
 
-      <div className="payment-card">
+      <div className="payment-left">
 
-        <h2>Locker Booking Payment</h2>
+        <h3>Payment options</h3>
 
-        <p>Amount to Pay</p>
+        <div className="payment-option active">
+          Pay by any UPI App
+        </div>
 
-        <h1>₹100</h1>
+        <div className="payment-option">
+          Debit / Credit Card
+        </div>
+
+        <div className="payment-option">
+          Mobile Wallet
+        </div>
+
+        <div className="payment-option">
+          Net Banking
+        </div>
+
+      </div>
+
+      <div className="payment-right">
+
+        <h2>Pay ₹{bookingData.amount}</h2>
+
+        <p>Scan QR code to pay</p>
+
+        <img
+          src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=SmartLockerPayment"
+          alt="QR"
+        />
+
+        <p className="timer">
+
+          Time Remaining: {minutes}:{seconds.toString().padStart(2,"0")}
+
+        </p>
 
         <button onClick={handlePayment}>
-          Pay Now
+          I Have Paid
         </button>
 
       </div>

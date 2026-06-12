@@ -6,7 +6,6 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import BookingHistory from "./pages/BookingHistory";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import Payment from "./pages/Payment";
 import AdminDashboard from "./pages/AdminDashboard";
 import BookingSuccess from "./pages/BookingSuccess";
 import BookLocker from "./pages/BookLocker";

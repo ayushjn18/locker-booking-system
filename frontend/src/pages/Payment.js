@@ -39,12 +39,83 @@ const Payment = () => {
 
     console.log("Order Created:", orderRes.data);
 
+    const options = {
+
+      key: "rzp_test_T0kcpPQbl5pWfJ",
+
+      amount: orderRes.data.amount,
+
+      currency: orderRes.data.currency,
+
+      name: "AJ Smart Locker",
+
+      description: "Locker Booking Payment",
+
+      order_id: orderRes.data.id,
+
+      handler: async function (response) {
+
+  try {
+
+    console.log("Payment Success");
+
+    const token = localStorage.getItem("token");
+
+    const formData = new FormData();
+
+    formData.append("lockerId", bookingData.lockerId);
+    formData.append("durationHours", bookingData.durationHours);
+    formData.append("idType", bookingData.idType);
+    formData.append("idNumber", bookingData.idNumber);
+    formData.append("idImage", bookingData.idImage);
+
+    const res = await API.post("/bookings", formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data"
+      }
+    });
+
+    navigate("/success", {
+      state: {
+        accessCode: res.data.accessCode,
+        lockerNumber: bookingData.lockerNumber
+      }
+    });
+
   } catch (error) {
 
     console.log(error);
 
   }
 
+},
+
+      prefill: {
+
+        name: "User",
+
+        email: "user@example.com"
+
+      },
+
+      theme: {
+
+        color: "#3399cc"
+
+      }
+
+    };
+
+    const rzp = new window.Razorpay(options);
+
+    rzp.open();
+
+  } catch (error) {
+
+    console.log(error);
+
+  }
 
 };
 

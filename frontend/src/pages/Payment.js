@@ -26,39 +26,25 @@ const Payment = () => {
   const minutes = Math.floor(timeLeft/60);
   const seconds = timeLeft % 60;
 
-  const handlePayment = async ()=>{
+  const handlePayment = async () => {
 
-  try{
+  try {
 
-    const token = localStorage.getItem("token");
-
-    const formData = new FormData();
-
-    formData.append("lockerId", bookingData.lockerId);
-    formData.append("durationHours", bookingData.durationHours);
-    formData.append("idType", bookingData.idType);
-    formData.append("idNumber", bookingData.idNumber);
-    formData.append("idImage", bookingData.idImage);
-
-    const res = await API.post("/bookings", formData, {
-      headers:{
-        Authorization:`Bearer ${token}`,
-        "Content-Type":"multipart/form-data"
+    const orderRes = await API.post(
+      "/payment/create-order",
+      {
+        amount: bookingData.amount
       }
-    });
+    );
 
-    navigate("/success",{
-      state:{
-        accessCode: res.data.accessCode,
-        lockerNumber: bookingData.lockerNumber
-      }
-    });
+    console.log("Order Created:", orderRes.data);
 
-  }catch(error){
+  } catch (error) {
 
     console.log(error);
 
   }
+
 
 };
 

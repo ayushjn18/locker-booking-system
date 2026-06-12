@@ -40,7 +40,7 @@ function App() {
   }
 />
 <Route path="/book-locker" element={<BookLocker/>}/>
-<Route path="/payment" element={<Payment />} />
+
 <Route
   path="/history"
   element={
